@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datatrap | Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@3.5.6/dist/vuetify.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div id="app">
+    <div>
+        <v-card width="400" class="mx-auto pa-8 pb-8 mt-10" elevation="8" max-width="448" rounded="lg">
+            <v-card-title class="pl-0">Datatrap</v-card-title>
+            <v-card-content>
+                <v-form fast-fail @submit.prevent="login" class="mt-4">
+                    <v-text-field v-model="username" label="Username" density="compact" variant="outlined" prepend-inner-icon="mdi-account"></v-text-field>
+
+                    <v-text-field v-model="password" :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'" :type="visible ? 'text' : 'password'"
+                                  density="compact" placeholder="Enter your password" prepend-inner-icon="mdi-lock-outline" variant="outlined"
+                                  @click:append-inner="visible = !visible" label="Password" :error-messages="error"></v-text-field>
+
+                    <v-btn type="submit" color="primary" block class="mt-2">Login</v-btn>
+                </v-form>
+            </v-card-content>
+        </v-card>
+    </div>
+</div>
+
+<script src="https://unpkg.com/vue@3.4.21/dist/vue.global.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@3.5.6/dist/vuetify.min.js"></script>
+<script>
+    const { createApp, ref } = Vue
+    const { createVuetify } = Vuetify;
+
+    const vuetify = createVuetify({
+        theme: {
+            defaultTheme: 'light'
+        }
+    })
+
+    const app = createApp({
+        data() {
+            return {
+                username: '',
+                password: '',
+                error: null,
+            };
+        },
+        methods: {
+            login() {
+                if (this.username !== "" && this.password !== "") {
+                    fetch("http://127.0.0.1:8815/login", {
+                        method: "POST",
+                        redirect: "follow",
+                        body: JSON.stringify({
+                            "username": this.username,
+                            "password": this.password
+                        }),
+                    })
+                        .then(response => response.redirected ? window.location.href = response.url : response.text())
+                        .then(text => text !== null ? this.error = text : null)
+                        .catch(error => {
+                            this.error = 'Bad request'
+                        });
+                }
+            },
+        },
+    })
+
+    app.use(vuetify).mount('#app')
+</script>
+</body>
+</html>
