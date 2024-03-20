@@ -1,6 +1,7 @@
 <?php
 
 use App\Debug\Application;
+use App\Debug\Middleware\AuthentificationMiddleware;
 use App\Debug\Middleware\DecodeGzipMiddleware;
 use App\Debug\Middleware\LogMiddleware;
 use App\Debug\Middleware\NoCorsMiddleware;
@@ -56,12 +57,12 @@ $router->get('/api/dump', fn() => Response::json($varDumperStore->findAll(['_id'
 $router->post('/api/(.*)/store', new SentryHandler($sentryStore, $publisher));
 
 // Authentification
-//if (isset($_ENV['USERNAME'], $_ENV['PASSWORD']) || isset($_SERVER['USERNAME'], $_SERVER['PASSWORD'])) {
-//    $app->addMiddleware(new AuthentificationMiddleware(
-//        $_ENV['USERNAME'] ?? $_SERVER['USERNAME'],
-//        $_ENV['PASSWORD'] ?? $_SERVER['PASSWORD'],
-//    ));
-//}
+if (isset($_ENV['USERNAME'], $_ENV['PASSWORD']) || isset($_SERVER['USERNAME'], $_SERVER['PASSWORD'])) {
+    $app->addMiddleware(new AuthentificationMiddleware(
+        $_ENV['USERNAME'] ?? $_SERVER['USERNAME'],
+        $_ENV['PASSWORD'] ?? $_SERVER['PASSWORD'],
+    ));
+}
 
 $app
     ->addWebsocket('0.0.0.0:8888', new Dispatcher())
