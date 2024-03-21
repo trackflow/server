@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Debug\Application;
 use App\Debug\Middleware\AuthentificationMiddleware;
 use App\Debug\Middleware\DecodeGzipMiddleware;
@@ -24,7 +26,7 @@ require __DIR__ . '/vendor/autoload.php';
 $loop = Loop::get();
 
 // Parameters
-$dbPath = __DIR__.'/var/db';
+$dbPath = sys_get_temp_dir();
 $websocketHost = '0.0.0.0:8816';
 
 // Services
@@ -81,8 +83,3 @@ try {
 } catch (\Throwable $e) {
     echo $e->getMessage().PHP_EOL;
 }
-
-
-
-
-

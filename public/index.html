@@ -239,7 +239,7 @@
 
     const sentryApp = {
         setup() {
-            fetch("http://127.0.0.1:8815/api/sentry")
+            fetch("/api/sentry")
                 .then(response => response.json())
                 .then(function(json) {
                     itemsSentry.value = json
@@ -319,7 +319,7 @@
         methods: {
             formatTime,
             fetchData() {
-                fetch("http://127.0.0.1:8815/api/sentry/" + this.$route.params.id)
+                fetch("/api/sentry/" + this.$route.params.id)
                     .then(response => response.json())
                     .then(json => this.item = json)
             },
@@ -444,7 +444,7 @@
 
     const smtpApp = {
         setup() {
-            fetch("http://127.0.0.1:8815/api/smtp")
+            fetch("/api/smtp")
                 .then(response => response.json())
                 .then(json => itemsSmtp.value = json)
 
@@ -526,7 +526,7 @@
         methods: {
             formatDateTime,
             fetchData() {
-                fetch("http://127.0.0.1:8815/api/smtp/" + this.$route.params.id)
+                fetch("/api/smtp/" + this.$route.params.id)
                     .then(response => response.json())
                     .then(json => this.item = json)
             }
@@ -610,7 +610,7 @@
             initFlowbite()
         },
         setup() {
-            fetch("http://127.0.0.1:8815/api/log")
+            fetch("/api/log")
                 .then(response => response.json())
                 .then(json => itemsLog.value = json)
 
@@ -664,7 +664,7 @@
 
     const dumpApp = {
         setup() {
-            fetch("http://127.0.0.1:8815/api/dump")
+            fetch("/api/dump")
                 .then(response => response.json())
                 .then(json => itemsDump.value = json)
 

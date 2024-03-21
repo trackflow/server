@@ -1,7 +1,10 @@
 {
     "name": "applications/debug",
     "type": "project",
+    "description": "PHP debugger application",
+    "license": "MIT",
     "require": {
+        "php": "8.3.*",
         "ext-zlib": "*",
         "react/http": "^1.9",
         "react/socket": "^1.15",
