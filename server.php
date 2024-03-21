@@ -25,7 +25,7 @@ $loop = Loop::get();
 
 // Parameters
 $dbPath = __DIR__.'/var/db';
-$websocketHost = '0.0.0.0:8888';
+$websocketHost = '0.0.0.0:8816';
 
 // Services
 $sentryStore = new Store("sentry", $dbPath, ['timeout' => false]);
@@ -35,7 +35,7 @@ $logStore = new Store("log", $dbPath, ['timeout' => false]);
 $publisher = new Publisher($websocketHost);
 
 // Servers
-$app = new Application('0.0.0.0:8080', $loop);
+$app = new Application('0.0.0.0:8815', $loop);
 
 $router = new Router();
 $router->get('/', fn() => Response::html(file_get_contents(__DIR__ . '/public/index.html')));
@@ -56,7 +56,7 @@ $router->get('/api/log', fn() => Response::json($logStore->findAll(['_id' => 'DE
 $router->get('/api/dump', fn() => Response::json($varDumperStore->findAll(['_id' => 'DESC'])));
 $router->post('/api/(.*)/store', new SentryHandler($sentryStore, $publisher));
 
-// Authentification
+// Authentication
 if (isset($_ENV['USERNAME'], $_ENV['PASSWORD']) || isset($_SERVER['USERNAME'], $_SERVER['PASSWORD'])) {
     $app->addMiddleware(new AuthentificationMiddleware(
         $_ENV['USERNAME'] ?? $_SERVER['USERNAME'],
@@ -65,7 +65,7 @@ if (isset($_ENV['USERNAME'], $_ENV['PASSWORD']) || isset($_SERVER['USERNAME'], $
 }
 
 $app
-    ->addWebsocket('0.0.0.0:8888', new Dispatcher())
+    ->addWebsocket('0.0.0.0:8816', new Dispatcher())
     ->addSocket('0.0.0.0:5555', new VarDumperHandler($varDumperStore, $publisher))
     ->addSocket('0.0.0.0:4343', new MonologHandler($logStore, $publisher))
     ->addSocket('0.0.0.0:1025', new SmtpCatcherHandler($smtpStore, $publisher))

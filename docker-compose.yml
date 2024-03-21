@@ -1,0 +1,15 @@
+services:
+  trackflow:
+    image: webdevops/php-dev:8.3
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      USERNAME: admin
+      PASSWORD: lucky-dev
+    ports:
+      - "8815:8815"
+      - "8816:8816"
+      - "5555:5555"
+      - "4343:4343"
+      - "1025:1025"

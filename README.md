@@ -1,11 +1,13 @@
-# ![logo](public/logo.svg) Trackflow debugger php application
+# ![logo](public/logo.svg) Trackflow a php application debugging tool
+
+Trackflow makes debugging an application easier and more pleasant so you can concentrate on your developments.
 
 ## Getting started
 
 ### With docker
 
 ```bash
-docker run -p 8815:8080 -p 8816:8888 -p 5555:5555 -p 4343:4343 -p 1025:1025 trackflow/server:latest
+docker run -p 8815:8815 -p 8816:8816 -p 5555:5555 -p 4343:4343 -p 1025:1025 trackflow/server:latest
 ```
 
 ### With docker compose
@@ -13,11 +15,11 @@ docker run -p 8815:8080 -p 8816:8888 -p 5555:5555 -p 4343:4343 -p 1025:1025 trac
 trackflow:
   image: trackflow/server:latest
   ports:
-    - "8815:8080"
-    - "8816:8888"
+    - "8815:8815"
+    - "8816:8816"
 ```
 
-Open Trackflow in your browser http://localhost:8815
+Open Trackflow in your browser http://127.0.0.1:8815
 
 ### Enable authenticate
 
@@ -44,6 +46,8 @@ SENTRY_LARAVEL_DSN=http://sentry@127.0.0.1:8815/project1
 ```
 
 ### SMTP Mailer
+An SMTP server as a mailtrap to catch emails
+
 **Symfony**, **Laravel**
 ```
 MAILER_DSN=smtp://127.0.0.1:1025

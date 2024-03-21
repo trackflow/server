@@ -17,10 +17,14 @@ RUN apk add --no-cache \
     && mkdir var \
     && chmod -R 777 var
 
-EXPOSE 8080
-EXPOSE 8888
+EXPOSE 8815
+EXPOSE 8816
 EXPOSE 5555
 EXPOSE 4343
 EXPOSE 1025
+
+LABEL org.opencontainers.image.source=https://github.com/trackflow/server
+LABEL org.opencontainers.image.description="Trackflow server"
+LABEL org.opencontainers.image.licenses=MIT
 
 ENTRYPOINT ["./docker/entrypoint.sh"]
