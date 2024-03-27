@@ -14,7 +14,7 @@ final class DecodeGzipMiddleware
         if ($request->getHeaderLine('content-encoding') === 'gzip') {
             $body = array_map(
                 static fn(string $payload) => json_decode($payload, true, 512, JSON_THROW_ON_ERROR),
-                \array_filter(\explode("\n", \gzdecode((string) $request->getBody())))
+                \array_filter(\explode("\n", \gzdecode((string) $request->getBody()) ?: ""))
             );
 
             $request = $request->withParsedBody(count($body) === 1 ? current($body) : $body);

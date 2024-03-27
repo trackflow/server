@@ -13,9 +13,7 @@ RUN apk add --no-cache \
     && apk del ${BUILD_DEPENDS} \
     && rm -rf /var/cache/apk/* \
     && curl -s https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer \
-    && composer install --no-dev \
-    && mkdir var \
-    && chmod -R 777 var
+    && composer install --prefer-dist --no-progress --no-dev
 
 EXPOSE 8815
 EXPOSE 8816

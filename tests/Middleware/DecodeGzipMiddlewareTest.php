@@ -31,7 +31,7 @@ BODY;
                 'x-sentry-auth' => 'Sentry sentry_version=7, sentry_client=sentry.php.symfony/4.10.0, sentry_key=sentry'
             ],
             gzcompress(json_encode(['foo' => 'bar']), -1, ZLIB_ENCODING_GZIP)
-        ), function (ServerRequest $request) {
+        ), function(ServerRequest $request) {
             self::assertSame(['foo' => 'bar'], $request->getParsedBody());
 
             return new Response();
@@ -51,7 +51,7 @@ BODY;
                 'x-sentry-auth' => 'Sentry sentry_version=7, sentry_client=sentry.php.symfony/4.10.0, sentry_key=sentry'
             ],
             gzcompress(self::JSON, -1, ZLIB_ENCODING_GZIP)
-        ), function (ServerRequest $request) {
+        ), function(ServerRequest $request) {
             self::assertSame([
                 'event_id' => '2b4f7918973f4371933dce5b3ac381bd',
                 'sent_at' => '2023-12-01T18:30:35Z',

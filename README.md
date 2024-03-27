@@ -10,6 +10,12 @@ Trackflow makes debugging an application easier and more pleasant so you can con
 docker run -p 8815:8815 -p 8816:8816 -p 5555:5555 -p 4343:4343 -p 1025:1025 trackflow/server:latest
 ```
 
+#### Different docker network
+If you are calling the tracking flow from a container with a different network, prefer to use the docker IP gateway
+```bash
+docker inspect bridge | grep Gateway
+```
+
 ### With docker compose
 ```yaml
 trackflow:
