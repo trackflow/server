@@ -42,6 +42,6 @@ final readonly class AuthentificationMiddleware
             return new Response(StatusCodeInterface::STATUS_BAD_REQUEST, ['Access-Control-Allow-Origin' => '*'], 'Invalid credentials');
         }
 
-        return Response::html(file_get_contents(__DIR__.'/../../public/login.html'));
+        return Response::html(file_get_contents(__DIR__.'/../../public/login.html') ?: "<h1>Internal error</h1>");
     }
 }

@@ -10,6 +10,7 @@ use App\Debug\Middleware\NoCorsMiddleware;
 use App\Debug\Middleware\UrlMatcherMiddleware;
 use App\Debug\Module\MonologHandler;
 use App\Debug\Module\SentryHandler;
+use App\Debug\Module\Smtp\FileSmtpRepository;
 use App\Debug\Module\Smtp\SmtpCatcherHandler;
 use App\Debug\Module\Smtp\SmtpPreviewHandler;
 use App\Debug\Module\VarDumperHandler;
@@ -31,7 +32,7 @@ $websocketHost = '0.0.0.0:8816';
 
 // Services
 $sentryStore = new Store("sentry", $dbPath, ['timeout' => false]);
-$smtpStore = new Store("smtp", $dbPath, ['timeout' => false]);
+$smtpRepository = new FileSmtpRepository(new Store("smtp", $dbPath, ['timeout' => false]));
 $varDumperStore = new Store("var_dump", $dbPath, ['timeout' => false]);
 $logStore = new Store("log", $dbPath, ['timeout' => false]);
 $publisher = new Publisher($websocketHost);
@@ -46,13 +47,12 @@ $router->get(
     '/api/sentry/(.*)',
     fn(ServerRequestInterface $request) => Response::json($sentryStore->findById($request->getAttribute('id')))
 );
-$router->get('/api/smtp', fn() => Response::json($smtpStore->findAll(['_id' => 'DESC'])));
-$router->get('/api/smtp/preview/(.*)', new SmtpPreviewHandler($smtpStore));
+$router->get('/api/smtp', fn() => Response::json($smtpRepository->findAll(['_id' => 'DESC'])));
+$router->get('/api/smtp/preview/(.*)', new SmtpPreviewHandler($smtpRepository));
 $router->get(
     '/api/smtp/(.*)',
-    fn(ServerRequestInterface $request) => Response::json($smtpStore->findById($request->getAttribute('id')))
+    fn(ServerRequestInterface $request) => Response::json($smtpRepository->get((int) $request->getAttribute('id')))
 );
-
 
 $router->get('/api/log', fn() => Response::json($logStore->findAll(['_id' => 'DESC'])));
 $router->get('/api/dump', fn() => Response::json($varDumperStore->findAll(['_id' => 'DESC'])));
@@ -70,7 +70,7 @@ $app
     ->addWebsocket('0.0.0.0:8816', new Dispatcher())
     ->addSocket('0.0.0.0:5555', new VarDumperHandler($varDumperStore, $publisher))
     ->addSocket('0.0.0.0:4343', new MonologHandler($logStore, $publisher))
-    ->addSocket('0.0.0.0:1025', new SmtpCatcherHandler($smtpStore, $publisher))
+    ->addSocket('0.0.0.0:1025', new SmtpCatcherHandler($smtpRepository, $publisher))
     ->addMiddleware(
         new LogMiddleware(),
         new DecodeGzipMiddleware(),

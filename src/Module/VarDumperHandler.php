@@ -11,9 +11,8 @@ use SleekDB\Store;
 use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\VarDumper\Cloner\Stub;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
-use Symfony\Component\VarDumper\VarDumper;
 
-final class VarDumperHandler
+final readonly class VarDumperHandler
 {
     public function __construct(
         private Store $store,

@@ -8,6 +8,17 @@ server:
 test:
 	docker compose exec trackflow composer run-script test
 
+linter: stan cs-fix
+
+stan:
+	docker compose exec trackflow vendor/bin/phpstan analyse
+
+cs:
+	docker compose exec trackflow vendor/bin/php-cs-fixer fix -v --dry-run
+
+cs-fix:
+	docker compose exec trackflow vendor/bin/php-cs-fixer fix -v
+
 build:
 	docker build . -f docker/Dockerfile -t trackflow/server --no-cache
 

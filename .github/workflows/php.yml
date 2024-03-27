@@ -38,5 +38,10 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
 
+      - name: Run linter suite
+        run: |
+            vendor/bin/phpstan analyse
+            vendor/bin/php-cs-fixer fix -v --dry-run
+
       - name: Run test suite
         run: composer run-script test

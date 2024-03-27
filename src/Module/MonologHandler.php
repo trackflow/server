@@ -18,7 +18,7 @@ final readonly class MonologHandler
 
     public function __invoke(ConnectionInterface $connection): void
     {
-        $connection->on('data', function ($data)  {
+        $connection->on('data', function($data) {
             try {
                 $log = json_decode($data, true, 512, JSON_THROW_ON_ERROR);
                 $this->store->insert($log);

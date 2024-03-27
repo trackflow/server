@@ -6,12 +6,11 @@ namespace App\Debug\Module\Smtp;
 
 use App\Debug\Websocket\PublisherInterface;
 use React\Socket\ConnectionInterface;
-use SleekDB\Store;
 
 final readonly class SmtpCatcherHandler
 {
     public function __construct(
-        private Store $store,
+        private SmtpRepository $store,
         private PublisherInterface $publisher
     ) {
     }
@@ -92,7 +91,7 @@ final readonly class SmtpCatcherHandler
             }
 
             if ($line === '.') {
-                $emailInsert = $this->store->insert($email);
+                $emailInsert = $this->store->save($email);
                 $this->publisher->send($emailInsert, 'smtp');
                 $email = ['body' => ''];
             }
