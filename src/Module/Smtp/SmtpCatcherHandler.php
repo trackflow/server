@@ -15,11 +15,11 @@ final readonly class SmtpCatcherHandler
     ) {
     }
 
-    function __invoke(ConnectionInterface $connection): void
+    public function __invoke(ConnectionInterface $connection): void
     {
         $connection->write("220 localhost ESMTP\r\n");
         $buffer = '';
-        $connection->on('data', function ($data) use ($connection, &$buffer) {
+        $connection->on('data', function($data) use ($connection, &$buffer) {
             $buffer .= $data;
 
             // Process the incoming data line by line
@@ -53,7 +53,7 @@ final readonly class SmtpCatcherHandler
         });
 
         $email = ['body' => ''];
-        $connection->on('line', function ($line) use (&$email) {
+        $connection->on('line', function($line) use (&$email) {
             if (str_contains($line, 'To:')) {
                 $email['to'] = str_replace('To: ', '', $line);
             }
@@ -97,7 +97,7 @@ final readonly class SmtpCatcherHandler
             }
         });
 
-        $connection->on('error', function ($e) {
+        $connection->on('error', function($e) {
             echo "Error: $e\n";
         });
     }

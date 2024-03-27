@@ -25,17 +25,17 @@ final readonly class VarDumperHandler
         echo 'received dump connection...'.PHP_EOL;
 
         $buffer = new BufferStream();
-        $connection->on('data', function ($data) use($buffer) {
+        $connection->on('data', function($data) use ($buffer) {
             $buffer->write($data);
         });
 
-        $connection->on('end', function () use($buffer) {
+        $connection->on('end', function() use ($buffer) {
             $data = $this->decode($buffer->getContents());
 
             if ($data instanceof Data) {
                 $dumper = new HtmlDumper();
                 $output = '';
-                $dumper->dump($data, function ($line, int $depth) use (&$output): void {
+                $dumper->dump($data, function($line, int $depth) use (&$output): void {
                     // A negative depth means "end of dump"
                     if ($depth >= 0) {
                         // Adds a two spaces indentation to the line

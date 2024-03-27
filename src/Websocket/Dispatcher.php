@@ -14,17 +14,17 @@ final readonly class Dispatcher implements MessageComponentInterface
         private \SplObjectStorage $clients = new \SplObjectStorage()
     ) {
     }
-    function onOpen(ConnectionInterface $conn): void
+    public function onOpen(ConnectionInterface $conn): void
     {
         $this->clients->attach($conn);
     }
 
-    function onClose(ConnectionInterface $conn): void
+    public function onClose(ConnectionInterface $conn): void
     {
         $conn->close();
     }
 
-    function onError(ConnectionInterface $conn, \Exception $e): void
+    public function onError(ConnectionInterface $conn, \Exception $e): void
     {
         $this->clients->detach($conn);
     }

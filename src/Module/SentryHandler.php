@@ -14,8 +14,7 @@ final readonly class SentryHandler
     public function __construct(
         private Store $store,
         private PublisherInterface $publisher,
-    )
-    {
+    ) {
     }
 
     public function __invoke(ServerRequestInterface $request): Response
@@ -23,7 +22,7 @@ final readonly class SentryHandler
         if (\str_contains($request->getHeaderLine('X-Sentry-Auth'), 'sentry_client=sentry.php')) {
             $data = $request->getParsedBody();
 
-            if (is_array($data)){
+            if (is_array($data)) {
                 $this->store->insert($data);
                 $this->publisher->send($data, 'sentry');
             }

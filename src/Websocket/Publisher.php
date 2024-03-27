@@ -21,7 +21,7 @@ final readonly class Publisher implements PublisherInterface
 
         connect("ws://{$this->host}")->then(
             fn($conn) => $conn->send(json_encode($stamp, JSON_THROW_ON_ERROR)),
-            fn ($e) => throw new \RuntimeException("Could not connect: {$e->getMessage()}\n")
+            fn($e) => throw new \RuntimeException("Could not connect: {$e->getMessage()}\n")
         );
     }
 }
