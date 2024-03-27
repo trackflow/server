@@ -10,7 +10,7 @@ use React\Socket\ConnectionInterface;
 final readonly class SmtpCatcherHandler
 {
     public function __construct(
-        private SmtpRepository $store,
+        private SmtpRepository $repository,
         private PublisherInterface $publisher
     ) {
     }
@@ -19,7 +19,8 @@ final readonly class SmtpCatcherHandler
     {
         $connection->write("220 localhost ESMTP\r\n");
         $buffer = '';
-        $connection->on('data', function($data) use ($connection, &$buffer) {
+        $email = ['body' => ''];
+        $connection->on('data', function($data) use ($connection, &$buffer, &$email) {
             $buffer .= $data;
 
             // Process the incoming data line by line
@@ -31,7 +32,7 @@ final readonly class SmtpCatcherHandler
 
                 // Handle the command
                 try {
-                    $connection->emit('line', [$line]);
+                    $this->parseLine($line, $email);
                     if (preg_match('/^QUIT/i', $line)) {
                         $connection->end("221 Bye\r\n");
                         $connection->close();
@@ -52,53 +53,53 @@ final readonly class SmtpCatcherHandler
             }
         });
 
-        $email = ['body' => ''];
-        $connection->on('line', function($line) use (&$email) {
-            if (str_contains($line, 'To:')) {
-                $email['to'] = str_replace('To: ', '', $line);
-            }
+//        $connection->on('error', function($e) {
+//            echo "Error: $e\n";
+//        });
+    }
 
-            if (str_contains($line, 'From:')) {
-                $email['from'] = str_replace('From: ', '', $line);
-            }
+    private function parseLine(string $line, array &$email): void
+    {
+        if (str_contains($line, 'To:')) {
+            $email['to'] = str_replace('To: ', '', $line);
+        }
 
-            if (str_contains($line, 'Subject:')) {
-                $email['subject'] = str_replace('Subject: ', '', $line);
-            }
+        if (str_contains($line, 'From:')) {
+            $email['from'] = str_replace('From: ', '', $line);
+        }
 
-            if (str_contains($line, 'Message-ID:')) {
-                $email['messageId'] = str_replace('Message-ID: ', '', $line);
-            }
+        if (str_contains($line, 'Subject:')) {
+            $email['subject'] = str_replace('Subject: ', '', $line);
+        }
 
-            if (str_contains($line, 'MIME-Version:')) {
-                $email['mimeVersion'] = str_replace('MIME-Version: ', '', $line);
-            }
+        if (str_contains($line, 'Message-ID:')) {
+            $email['messageId'] = str_replace('Message-ID: ', '', $line);
+        }
 
-            if (str_contains($line, 'Date:')) {
-                $email['date'] = str_replace('Date: ', '', $line);
-            }
+        if (str_contains($line, 'MIME-Version:')) {
+            $email['mimeVersion'] = str_replace('MIME-Version: ', '', $line);
+        }
 
-            if (str_contains($line, 'Content-Type:')) {
-                $email['contentType'] = str_replace('Content-Type: ', '', $line);
-            }
+        if (str_contains($line, 'Date:')) {
+            $email['date'] = str_replace('Date: ', '', $line);
+        }
 
-            if (str_contains($line, 'Content-Transfer-Encoding:')) {
-                $email['contentTransferEncoding'] = str_replace('Content-Transfer-Encoding: ', '', $line);
-            }
+        if (str_contains($line, 'Content-Type:')) {
+            $email['contentType'] = str_replace('Content-Type: ', '', $line);
+        }
 
-            if (isset($email['contentTransferEncoding']) && !str_contains($line, 'Content-Transfer-Encoding:') && $line !== ".") {
-                $email['body'] .= $line.PHP_EOL;
-            }
+        if (str_contains($line, 'Content-Transfer-Encoding:')) {
+            $email['contentTransferEncoding'] = str_replace('Content-Transfer-Encoding: ', '', $line);
+        }
 
-            if ($line === '.') {
-                $emailInsert = $this->store->save($email);
-                $this->publisher->send($emailInsert, 'smtp');
-                $email = ['body' => ''];
-            }
-        });
+        if (isset($email['contentTransferEncoding']) && !str_contains($line, 'Content-Transfer-Encoding:') && $line !== ".") {
+            $email['body'] .= $line.PHP_EOL;
+        }
 
-        $connection->on('error', function($e) {
-            echo "Error: $e\n";
-        });
+        if ($line === '.') {
+            $emailInsert = $this->repository->save($email);
+            $this->publisher->send($emailInsert, 'smtp');
+            $email = ['body' => ''];
+        }
     }
 }

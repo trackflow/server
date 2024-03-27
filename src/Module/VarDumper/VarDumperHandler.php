@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Debug\Module;
+namespace App\Debug\Module\VarDumper;
 
 use App\Debug\Websocket\PublisherInterface;
 use GuzzleHttp\Psr7\BufferStream;
 use React\Socket\ConnectionInterface;
-use SleekDB\Store;
 use Symfony\Component\VarDumper\Cloner\Data;
 use Symfony\Component\VarDumper\Cloner\Stub;
 use Symfony\Component\VarDumper\Dumper\HtmlDumper;
@@ -15,8 +14,8 @@ use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 final readonly class VarDumperHandler
 {
     public function __construct(
-        private Store $store,
-        private PublisherInterface $publisher
+        private VarDumperRepository $repository,
+        private PublisherInterface  $publisher
     ) {
     }
 
@@ -30,23 +29,25 @@ final readonly class VarDumperHandler
         });
 
         $connection->on('end', function() use ($buffer) {
-            $data = $this->decode($buffer->getContents());
+            foreach(explode("\n", $buffer->getContents()) as $content) {
+                $data = $this->decode($content);
 
-            if ($data instanceof Data) {
-                $dumper = new HtmlDumper();
-                $output = '';
-                $dumper->dump($data, function($line, int $depth) use (&$output): void {
-                    // A negative depth means "end of dump"
-                    if ($depth >= 0) {
-                        // Adds a two spaces indentation to the line
-                        $output .= str_repeat('  ', $depth).$line."\n";
-                    }
-                });
-                $dump = [
-                    'body' => $output
-                ];
-                $this->store->insert($dump);
-                $this->publisher->send($dump, 'dump');
+                if ($data instanceof Data) {
+                    $dumper = new HtmlDumper();
+                    $output = '';
+                    $dumper->dump($data, function($line, int $depth) use (&$output): void {
+                        // A negative depth means "end of dump"
+                        if ($depth >= 0) {
+                            // Adds a two spaces indentation to the line
+                            $output .= str_repeat('  ', $depth).$line."\n";
+                        }
+                    });
+                    $dump = [
+                        'body' => $output
+                    ];
+                    $this->repository->save($dump);
+                    $this->publisher->send($dump, 'dump');
+                }
             }
         });
     }
