@@ -7,6 +7,7 @@ use App\Debug\Middleware\AuthentificationMiddleware;
 use App\Debug\Middleware\DecodeGzipMiddleware;
 use App\Debug\Middleware\LogMiddleware;
 use App\Debug\Middleware\NoCorsMiddleware;
+use App\Debug\Middleware\StaticServerMiddleware;
 use App\Debug\Middleware\UrlMatcherMiddleware;
 use App\Debug\Module\Monolog\FileMonologRepository;
 use App\Debug\Module\Monolog\MonologHandler;
@@ -80,6 +81,7 @@ $app
         new LogMiddleware(),
         new DecodeGzipMiddleware(),
         new NoCorsMiddleware(),
+        new StaticServerMiddleware(__DIR__.'/public'),
         new UrlMatcherMiddleware($router)
     );
 

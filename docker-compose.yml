@@ -4,12 +4,21 @@ services:
     working_dir: /app
     volumes:
       - ./:/app
-    environment:
-      USERNAME: admin
-      PASSWORD: lucky-dev
+#    environment:
+#      USERNAME: admin
+#      PASSWORD: lucky-dev
     ports:
       - "8815:8815"
       - "8816:8816"
       - "5555:5555"
       - "4343:4343"
       - "1025:1025"
+
+  node:
+    image: node:20.12.0
+    volumes:
+      - ./front:/app
+    working_dir: /app
+    command: bash -c "npm install && npm run dev"
+    ports:
+      - "5173:5173"
